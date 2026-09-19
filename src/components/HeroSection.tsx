@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { HelpCircle, BarChart3, FolderOpen, Search, ArrowRight, CheckCircle2, ShieldCheck, Zap, Camera, Upload } from 'lucide-react';
+import React, { useState } from 'react';
+import { HelpCircle, BarChart3, FolderOpen, Search, ArrowRight, CheckCircle2, ShieldCheck, Zap } from 'lucide-react';
 
 interface HeroSectionProps {
   onScrollToSiklus: () => void;
@@ -13,47 +13,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   onSearchSubmit
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const [customPhoto, setCustomPhoto] = useState<string>(() => {
-    const saved = localStorage.getItem('pln_desk_photo');
-    if (!saved) {
-      return '/cover.png';
-    }
-    return saved;
-  });
-  const [isDragOver, setIsDragOver] = useState(false);
-
-  const handlePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const dataUrl = event.target.result as string;
-          setCustomPhoto(dataUrl);
-          localStorage.setItem('pln_desk_photo', dataUrl);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragOver(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        if (event.target?.result) {
-          const dataUrl = event.target.result as string;
-          setCustomPhoto(dataUrl);
-          localStorage.setItem('pln_desk_photo', dataUrl);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -82,42 +41,25 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
           
-          {/* Left Column: PLN Officers Visual (Transparent Cutout, No Box / Border) */}
+          {/* Left Column: PLN Officers Visual (.SVG Format, Transparent Cutout) */}
           <div className="lg:col-span-5 flex flex-col items-center justify-center">
-            <div 
-              className="relative w-full max-w-md flex flex-col items-center"
-              onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-              onDragLeave={() => setIsDragOver(false)}
-              onDrop={handleDrop}
-            >
-              {/* Soft ambient backlight behind officers (No solid box) */}
+            <div className="relative w-full max-w-md flex flex-col items-center">
+              {/* Soft ambient backlight behind officers */}
               <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-blue-500/15 rounded-full blur-3xl pointer-events-none -z-10" />
 
-              {/* Hidden file input for photo upload */}
-              <input
-                type="file"
-                ref={fileInputRef}
-                onChange={handlePhotoUpload}
-                accept="image/*"
-                className="hidden"
-              />
-
-              {/* Officers Cutout Figure Container - Completely Transparent, No Box Border */}
+              {/* Officers Cutout Figure Container - Clean SVG without Upload/Reset Buttons */}
               <div className="relative w-full flex flex-col items-center group">
                 <img
-                  src={customPhoto}
+                  src="/cover.svg"
                   alt="Petugas Layanan PPID PT PLN (Persero) UID Kaltimra"
                   className="w-full max-h-[500px] object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.65)] select-none transform group-hover:scale-102 transition-transform duration-500 bg-transparent"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
                     const img = e.target as HTMLImageElement;
-                    const chatGptPath = encodeURI('/ChatGPT Image 19 Sep 2026, 05.53.28.png');
-                    if (img.src.endsWith('/cover.png')) {
-                      img.src = chatGptPath;
-                    } else if (img.src.includes('ChatGPT%20Image') || img.src.includes('ChatGPT Image')) {
-                      img.src = '/petugas-ppid.svg?v=3';
-                    } else if (!img.src.includes('petugas-ppid.svg')) {
-                      img.src = '/cover.png';
+                    if (img.src.endsWith('/cover.svg')) {
+                      img.src = '/Petugas_PLN.svg';
+                    } else if (img.src.endsWith('/Petugas_PLN.svg')) {
+                      img.src = '/petugas-ppid.svg';
                     }
                   }}
                 />
@@ -129,41 +71,6 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                     Desk Pelayanan Terbuka
                   </span>
                 </div>
-
-                {/* Photo change & reset actions */}
-                <div className="absolute top-1 right-2 flex items-center gap-1.5 opacity-70 hover:opacity-100 transition-opacity">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    title="Ganti atau unggah foto petugas (cover.png / ChatGPT Image)"
-                    className="bg-[#002B49]/85 hover:bg-[#0072B5] text-white backdrop-blur-md border border-white/20 p-2 rounded-full shadow-lg transition-all text-xs flex items-center gap-1.5"
-                  >
-                    <Camera className="w-3.5 h-3.5 text-[#FFD100]" />
-                    <span className="text-[10px] font-medium pr-1 hidden sm:inline">Ganti Foto</span>
-                  </button>
-                  {customPhoto !== '/cover.png' && (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        localStorage.removeItem('pln_desk_photo');
-                        setCustomPhoto('/cover.png');
-                      }}
-                      title="Reset ke gambar bawaan cover.png"
-                      className="bg-[#002B49]/85 hover:bg-rose-600 text-white backdrop-blur-md border border-white/20 px-2.5 py-1.5 rounded-full shadow-lg transition-all text-[10px] font-medium"
-                    >
-                      Reset
-                    </button>
-                  )}
-                </div>
-
-                {/* Drag-over indicator */}
-                {isDragOver && (
-                  <div className="absolute inset-0 bg-[#002B49]/90 backdrop-blur-xs rounded-2xl flex flex-col items-center justify-center text-center p-4 border-2 border-dashed border-[#FFD100] z-20">
-                    <Upload className="w-10 h-10 text-[#FFD100] mb-2 animate-bounce" />
-                    <p className="text-sm font-bold text-white">Lepaskan file gambar di sini</p>
-                    <p className="text-xs text-blue-200 mt-1">Format PNG transparan atau JPG</p>
-                  </div>
-                )}
               </div>
 
               {/* Seamless Identity Badge Below Officers (No enclosing box) */}
