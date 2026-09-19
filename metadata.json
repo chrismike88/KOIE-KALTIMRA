@@ -1,0 +1,7 @@
+{
+  "name": "PLN UID Kaltimra PPID Portal",
+  "description": "Portal Layanan Pejabat Pengelola Informasi dan Dokumentasi (PPID) PT PLN (Persero) Unit Induk Distribusi Kalimantan Timur dan Kalimantan Utara.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
+
