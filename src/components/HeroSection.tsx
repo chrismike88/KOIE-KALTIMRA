@@ -16,8 +16,8 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [customPhoto, setCustomPhoto] = useState<string>(() => {
     const saved = localStorage.getItem('pln_desk_photo');
-    if (!saved || saved.startsWith('/petugas-ppid.svg')) {
-      return '/petugas-ppid.svg?v=3';
+    if (!saved) {
+      return '/cover.png';
     }
     return saved;
   });
@@ -110,7 +110,15 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   className="w-full max-h-[500px] object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.65)] select-none transform group-hover:scale-102 transition-transform duration-500 bg-transparent"
                   referrerPolicy="no-referrer"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/petugas-ppid.svg?v=3';
+                    const img = e.target as HTMLImageElement;
+                    const chatGptPath = encodeURI('/ChatGPT Image 19 Sep 2026, 05.53.28.png');
+                    if (img.src.endsWith('/cover.png')) {
+                      img.src = chatGptPath;
+                    } else if (img.src.includes('ChatGPT%20Image') || img.src.includes('ChatGPT Image')) {
+                      img.src = '/petugas-ppid.svg?v=3';
+                    } else if (!img.src.includes('petugas-ppid.svg')) {
+                      img.src = '/cover.png';
+                    }
                   }}
                 />
 
@@ -127,20 +135,20 @@ export const HeroSection: React.FC<HeroSectionProps> = ({
                   <button
                     type="button"
                     onClick={() => fileInputRef.current?.click()}
-                    title="Ganti atau unggah foto petugas (PNG/JPG)"
+                    title="Ganti atau unggah foto petugas (cover.png / ChatGPT Image)"
                     className="bg-[#002B49]/85 hover:bg-[#0072B5] text-white backdrop-blur-md border border-white/20 p-2 rounded-full shadow-lg transition-all text-xs flex items-center gap-1.5"
                   >
                     <Camera className="w-3.5 h-3.5 text-[#FFD100]" />
                     <span className="text-[10px] font-medium pr-1 hidden sm:inline">Ganti Foto</span>
                   </button>
-                  {customPhoto !== '/petugas-ppid.svg?v=3' && (
+                  {customPhoto !== '/cover.png' && (
                     <button
                       type="button"
                       onClick={() => {
                         localStorage.removeItem('pln_desk_photo');
-                        setCustomPhoto('/petugas-ppid.svg?v=3');
+                        setCustomPhoto('/cover.png');
                       }}
-                      title="Reset ke gambar bawaan"
+                      title="Reset ke gambar bawaan cover.png"
                       className="bg-[#002B49]/85 hover:bg-rose-600 text-white backdrop-blur-md border border-white/20 px-2.5 py-1.5 rounded-full shadow-lg transition-all text-[10px] font-medium"
                     >
                       Reset
